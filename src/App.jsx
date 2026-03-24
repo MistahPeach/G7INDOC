@@ -16,7 +16,7 @@ export default function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <h1 onClick={goHome} style={{ cursor: 'pointer' }}>Indoc Study</h1>
+        <h1 onClick={goHome} style={{ cursor: 'pointer' }}>Indoc Study (Temu Sheppard Air)</h1>
         {screen !== 'dashboard' && (
           <button className="btn btn-small" onClick={goHome}>Home</button>
         )}
