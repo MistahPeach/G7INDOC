@@ -728,3 +728,54 @@ button.choice:not(:disabled):hover {
     font-size: 2.5rem;
   }
 }
+
+/* ====== PASSWORD GATE ====== */
+.password-gate {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: var(--bg);
+}
+
+.password-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 2rem;
+  max-width: 360px;
+  width: 100%;
+  text-align: center;
+}
+
+.password-card h2 {
+  margin-bottom: 0.5rem;
+}
+
+.password-card p {
+  color: var(--text-secondary);
+  margin-bottom: 1.25rem;
+  font-size: 0.95rem;
+}
+
+.password-input {
+  width: 100%;
+  padding: 0.7rem 1rem;
+  font-size: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  margin-bottom: 0.75rem;
+  text-align: center;
+}
+
+.password-input:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.password-error {
+  color: var(--danger);
+  font-size: 0.875rem;
+  margin-top: 0.75rem;
+}
