@@ -1,25 +1,26 @@
 import { useState, useCallback, useEffect } from 'react';
-import questions from '../data/questions.js';
 
-const STORAGE_KEY = 'indoc-study-progress';
 const PASSING_THRESHOLD = 0.80;
-const FINAL_TEST_COUNT = 86;
 
-function loadState() {
+function storageKey(bankId) {
+  return `indoc-study-progress-${bankId}`;
+}
+
+function loadState(bankId) {
   try {
-    const saved = localStorage.getItem(STORAGE_KEY);
+    const saved = localStorage.getItem(storageKey(bankId));
     if (saved) return JSON.parse(saved);
   } catch (e) { /* ignore */ }
   return null;
 }
 
-function buildDefaultState() {
+function buildDefaultState(questions) {
   const qState = {};
   questions.forEach(q => {
     qState[q.id] = {
       marked: false,
       phase1Viewed: false,
-      phase2Status: 'unanswered', // unanswered | right | wrong | unsure
+      phase2Status: 'unanswered',
     };
   });
   return {
@@ -32,14 +33,26 @@ function buildDefaultState() {
   };
 }
 
-export default function useProgress() {
+export default function useProgress(bankId, questions) {
+  const finalTestCount = Math.min(86, questions.length);
+
   const [state, setState] = useState(() => {
-    return loadState() || buildDefaultState();
+    return loadState(bankId) || buildDefaultState(questions);
   });
 
+  // Re-initialize when bank changes
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  }, [state]);
+    const saved = loadState(bankId);
+    if (saved) {
+      setState(saved);
+    } else {
+      setState(buildDefaultState(questions));
+    }
+  }, [bankId, questions]);
+
+  useEffect(() => {
+    localStorage.setItem(storageKey(bankId), JSON.stringify(state));
+  }, [bankId, state]);
 
   const update = useCallback((fn) => {
     setState(prev => {
@@ -90,7 +103,7 @@ export default function useProgress() {
   const startFinalTest = useCallback(() => {
     const shuffled = [...questions]
       .sort(() => Math.random() - 0.5)
-      .slice(0, FINAL_TEST_COUNT);
+      .slice(0, finalTestCount);
     update(() => ({
       finalTest: {
         questions: shuffled.map(q => q.id),
@@ -101,7 +114,7 @@ export default function useProgress() {
         currentIndex: 0,
       },
     }));
-  }, [update]);
+  }, [questions, finalTestCount, update]);
 
   const setFinalAnswer = useCallback((qId, answerIdx) => {
     setState(prev => {
@@ -165,7 +178,7 @@ export default function useProgress() {
         },
       };
     });
-  }, []);
+  }, [questions]);
 
   const markMissedFromFinal = useCallback(() => {
     setState(prev => {
@@ -179,8 +192,8 @@ export default function useProgress() {
   }, []);
 
   const resetProgress = useCallback(() => {
-    setState(buildDefaultState());
-  }, []);
+    setState(buildDefaultState(questions));
+  }, [questions]);
 
   const exportProgress = useCallback(() => {
     return JSON.stringify(state, null, 2);
@@ -197,7 +210,6 @@ export default function useProgress() {
     return false;
   }, []);
 
-  // Computed stats
   const totalQuestions = questions.length;
   const markedCount = Object.values(state.questionState).filter(q => q.marked).length;
   const masteredCount = totalQuestions - markedCount;
@@ -225,7 +237,6 @@ export default function useProgress() {
     resetProgress,
     exportProgress,
     importProgress,
-    // Stats
     totalQuestions,
     markedCount,
     masteredCount,
@@ -234,6 +245,6 @@ export default function useProgress() {
     phase2RightCount,
     markedQuestionIds,
     PASSING_THRESHOLD,
-    FINAL_TEST_COUNT,
+    FINAL_TEST_COUNT: finalTestCount,
   };
 }

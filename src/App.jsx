@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import useProgress from './hooks/useProgress';
+import indocQuestions from './data/questions.js';
+import hazmatQuestions from './data/hazmat-questions.js';
 import Dashboard from './components/Dashboard';
 import Phase1 from './components/Phase1';
 import Phase2 from './components/Phase2';
@@ -9,6 +11,11 @@ import './App.css';
 
 const APP_PASSWORD = 'Rogerroger';
 const AUTH_KEY = 'indoc-study-auth';
+
+const BANKS = {
+  indoc: { id: 'indoc', name: 'Indoc Study', questions: indocQuestions },
+  hazmat: { id: 'hazmat', name: 'HazMat / Security', questions: hazmatQuestions },
+};
 
 function PasswordGate({ onAuth }) {
   const [input, setInput] = useState('');
@@ -49,24 +56,42 @@ function PasswordGate({ onAuth }) {
   );
 }
 
-export default function App() {
-  const [authed, setAuthed] = useState(() => localStorage.getItem(AUTH_KEY) === 'true');
+function BankSelector({ onSelect }) {
+  return (
+    <div className="bank-selector">
+      <h2>Choose a Test Bank</h2>
+      <div className="bank-cards">
+        <button className="bank-card" onClick={() => onSelect('indoc')}>
+          <h3>Indoc Study</h3>
+          <p>{indocQuestions.length} questions</p>
+          <span className="bank-desc">General indoc test prep — FARs, ops specs, weather, procedures</span>
+        </button>
+        <button className="bank-card" onClick={() => onSelect('hazmat')}>
+          <h3>HazMat / Security</h3>
+          <p>{hazmatQuestions.length} questions</p>
+          <span className="bank-desc">Hazardous materials &amp; crewmember security training</span>
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function StudyApp({ bank, onSwitchBank }) {
   const [screen, setScreen] = useState('dashboard');
-  const progress = useProgress();
+  const progress = useProgress(bank.id, bank.questions);
 
   const goHome = () => setScreen('dashboard');
-
-  if (!authed) {
-    return <PasswordGate onAuth={() => setAuthed(true)} />;
-  }
 
   return (
     <div className="app">
       <header className="app-header">
-        <h1 onClick={goHome} style={{ cursor: 'pointer' }}>Indoc Study (Temu Sheppard Air)</h1>
-        {screen !== 'dashboard' && (
-          <button className="btn btn-small" onClick={goHome}>Home</button>
-        )}
+        <h1 onClick={goHome} style={{ cursor: 'pointer' }}>{bank.name}</h1>
+        <div className="header-actions">
+          {screen !== 'dashboard' && (
+            <button className="btn btn-small" onClick={goHome}>Home</button>
+          )}
+          <button className="btn btn-small" onClick={onSwitchBank}>Switch Test</button>
+        </div>
       </header>
       <main className="app-main">
         {screen === 'dashboard' && (
@@ -86,5 +111,35 @@ export default function App() {
         )}
       </main>
     </div>
+  );
+}
+
+export default function App() {
+  const [authed, setAuthed] = useState(() => localStorage.getItem(AUTH_KEY) === 'true');
+  const [bankId, setBankId] = useState(null);
+
+  if (!authed) {
+    return <PasswordGate onAuth={() => setAuthed(true)} />;
+  }
+
+  if (!bankId) {
+    return (
+      <div className="app">
+        <header className="app-header">
+          <h1>Indoc Study</h1>
+        </header>
+        <main className="app-main">
+          <BankSelector onSelect={setBankId} />
+        </main>
+      </div>
+    );
+  }
+
+  return (
+    <StudyApp
+      key={bankId}
+      bank={BANKS[bankId]}
+      onSwitchBank={() => setBankId(null)}
+    />
   );
 }

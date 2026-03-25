@@ -1002,7 +1002,7 @@ const questions = [
       "Snowfall doesn't affect the calculation of Holdover Times.",
       "Using the reported visibility and Snowfall Intensity as a Function of Prevailing Visibility table."
     ],
-    "correctAnswer": 0,
+    "correctAnswer": 3,
     "explanation": ""
   },
   {
@@ -1700,7 +1700,7 @@ const questions = [
     "id": "q144",
     "question": "An average adult passenger weight on June 1st is:",
     "choices": [
-      "200 pounds.",
+      "198 pounds.",
       "195 pounds.",
       "190 pounds.",
       "205 pounds."
@@ -1727,7 +1727,7 @@ const questions = [
       "The passengers weight as shown on their drivers license.",
       "82 pounds unless in STL.",
       "205 pounds.",
-      "200 pounds."
+      "198 pounds."
     ],
     "correctAnswer": 3,
     "explanation": ""
