@@ -4,7 +4,7 @@ import ProgressHeader from './ProgressHeader';
 import QuestionNavigator from './QuestionNavigator';
 
 export default function Phase3({ progress, goHome, setScreen }) {
-  const { questions, questionState, setQuestionState, toggleMark, markedCount, markedQuestionIds } = progress;
+  const { questions, questionState, setQuestionState, toggleMark, markAll, unmarkAll, markedCount, markedQuestionIds } = progress;
 
   const [index, setIndex] = useState(0);
   const [revealed, setRevealed] = useState(false);
@@ -117,7 +117,9 @@ export default function Phase3({ progress, goHome, setScreen }) {
         <button className="btn btn-small" onClick={toggleShuffle}>
           {shuffled ? 'Original Order' : 'Shuffle'}
         </button>
-        <span className="marked-count">{markedCount} marked questions left</span>
+        <button className="btn btn-small" onClick={markAll}>Mark All</button>
+        <button className="btn btn-small" onClick={unmarkAll}>Unmark All</button>
+        <span className="marked-count">{markedCount} left</span>
       </div>
 
       <div className="nav-controls">

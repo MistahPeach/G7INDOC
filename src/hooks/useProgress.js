@@ -191,6 +191,26 @@ export default function useProgress(bankId, questions) {
     });
   }, []);
 
+  const markAll = useCallback(() => {
+    setState(prev => {
+      const newQState = { ...prev.questionState };
+      questions.forEach(q => {
+        newQState[q.id] = { ...newQState[q.id], marked: true };
+      });
+      return { ...prev, questionState: newQState };
+    });
+  }, [questions]);
+
+  const unmarkAll = useCallback(() => {
+    setState(prev => {
+      const newQState = { ...prev.questionState };
+      questions.forEach(q => {
+        newQState[q.id] = { ...newQState[q.id], marked: false };
+      });
+      return { ...prev, questionState: newQState };
+    });
+  }, [questions]);
+
   const resetProgress = useCallback(() => {
     setState(buildDefaultState(questions));
   }, [questions]);
@@ -234,6 +254,8 @@ export default function useProgress(bankId, questions) {
     setFinalTestIndex,
     submitFinalTest,
     markMissedFromFinal,
+    markAll,
+    unmarkAll,
     resetProgress,
     exportProgress,
     importProgress,

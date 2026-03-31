@@ -8,7 +8,7 @@ export default function Dashboard({ progress, setScreen }) {
   const {
     totalQuestions, markedCount, masteredCount,
     phase1ViewedCount, phase2AnsweredCount, phase2RightCount,
-    state, resetProgress, exportProgress, importProgress,
+    state, markAll, unmarkAll, resetProgress, exportProgress, importProgress,
   } = progress;
 
   const phase1Pct = Math.round((phase1ViewedCount / totalQuestions) * 100);
@@ -106,9 +106,11 @@ export default function Dashboard({ progress, setScreen }) {
       </div>
 
       <div className="dashboard-actions">
-        <button className="btn btn-small" onClick={handleExport}>Export Progress</button>
-        <button className="btn btn-small" onClick={() => setShowImport(!showImport)}>Import Progress</button>
-        <button className="btn btn-small btn-danger" onClick={() => setShowReset(true)}>Reset Progress</button>
+        <button className="btn btn-small" onClick={markAll}>Mark All</button>
+        <button className="btn btn-small" onClick={unmarkAll}>Unmark All</button>
+        <button className="btn btn-small" onClick={handleExport}>Export</button>
+        <button className="btn btn-small" onClick={() => setShowImport(!showImport)}>Import</button>
+        <button className="btn btn-small btn-danger" onClick={() => setShowReset(true)}>Reset</button>
       </div>
 
       {showImport && (

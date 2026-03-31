@@ -12,14 +12,20 @@ export default function QuestionCard({
 }) {
   return (
     <div className={`question-card ${marked ? 'question-marked' : ''}`}>
-      {(number !== null || marked) && (
-        <div className="question-meta">
-          {number !== null && total !== null && (
-            <span className="question-number">Q {number} / {total}</span>
-          )}
-          {marked && <span className="badge badge-marked">Marked</span>}
-        </div>
-      )}
+      <div className="question-meta">
+        {number !== null && total !== null && (
+          <span className="question-number">Q {number} of {total}</span>
+        )}
+        {onToggleMark && (
+          <button
+            className={`btn-mark-toggle ${marked ? 'btn-mark-active' : ''}`}
+            onClick={onToggleMark}
+            title={marked ? 'Unmark' : 'Mark for Review'}
+          >
+            {marked ? '\u2605' : '\u2606'}
+          </button>
+        )}
+      </div>
 
       <p className="question-text">{question.question}</p>
 
@@ -53,17 +59,11 @@ export default function QuestionCard({
         })}
       </div>
 
-      {onToggleMark && (
-        <button
-          className={`btn btn-small btn-mark ${marked ? 'btn-marked' : ''}`}
-          onClick={onToggleMark}
-        >
-          {marked ? 'Unmark' : 'Mark for Review'}
-        </button>
-      )}
-
-      {question.explanation && revealed && (
-        <p className="explanation">{question.explanation}</p>
+      {question.explanation && (showCorrect || revealed) && (
+        <div className="explanation">
+          <span className="explanation-label">Explanation</span>
+          <p>{question.explanation}</p>
+        </div>
       )}
     </div>
   );

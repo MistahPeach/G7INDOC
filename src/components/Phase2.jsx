@@ -6,6 +6,7 @@ import QuestionNavigator from './QuestionNavigator';
 export default function Phase2({ progress, goHome, setScreen }) {
   const {
     questions, questionState, setQuestionState, toggleMark,
+    markAll, unmarkAll,
     setPhase2Index, completePhase2, state,
     phase2AnsweredCount, markedCount,
   } = progress;
@@ -151,6 +152,8 @@ export default function Phase2({ progress, goHome, setScreen }) {
         <button className="btn btn-small" onClick={toggleShuffle}>
           {shuffled ? 'Original Order' : 'Shuffle'}
         </button>
+        <button className="btn btn-small" onClick={markAll}>Mark All</button>
+        <button className="btn btn-small" onClick={unmarkAll}>Unmark All</button>
       </div>
 
       <div className="nav-controls">

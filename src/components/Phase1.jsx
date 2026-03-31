@@ -4,7 +4,7 @@ import ProgressHeader from './ProgressHeader';
 import QuestionNavigator from './QuestionNavigator';
 
 export default function Phase1({ progress, goHome }) {
-  const { questions, questionState, setQuestionState, toggleMark, setPhase1Index, completePhase1, state } = progress;
+  const { questions, questionState, setQuestionState, toggleMark, markAll, unmarkAll, setPhase1Index, completePhase1, state } = progress;
   const [index, setIndex] = useState(state.phase1Index || 0);
   const [showNav, setShowNav] = useState(false);
 
@@ -42,6 +42,11 @@ export default function Phase1({ progress, goHome }) {
         current={index + 1}
         total={questions.length}
       />
+
+      <div className="phase-toolbar">
+        <button className="btn btn-small" onClick={markAll}>Mark All</button>
+        <button className="btn btn-small" onClick={unmarkAll}>Unmark All</button>
+      </div>
 
       <div className="nav-controls">
         <button className="btn" onClick={goPrev} disabled={index === 0}>Previous</button>
