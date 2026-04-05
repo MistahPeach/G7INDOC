@@ -3,6 +3,8 @@ import useProgress from './hooks/useProgress';
 import indocQuestions from './data/questions.js';
 import hazmatQuestions from './data/hazmat-questions.js';
 import systemsQuestions from './data/systems-questions.js';
+import castQuestions from './data/cast-questions.js';
+import systemsWrittenExamQuestions from './data/systems-written-exam-questions.js';
 import Dashboard from './components/Dashboard';
 import Phase1 from './components/Phase1';
 import Phase2 from './components/Phase2';
@@ -10,14 +12,24 @@ import Phase3 from './components/Phase3';
 import Phase4 from './components/Phase4';
 import './App.css';
 
-const APP_PASSWORD = 'Rogerroger';
-const AUTH_KEY = 'indoc-study-auth';
+const BANK_PASSWORD = 'Rogerroger';
+const GATED_BANKS = ['indoc', 'hazmat'];
 
 const BANKS = {
   indoc: { id: 'indoc', name: 'Indoc Study', questions: indocQuestions },
   hazmat: { id: 'hazmat', name: 'HazMat / Security', questions: hazmatQuestions },
   systems: { id: 'systems', name: 'CRJ-700/550 Systems', questions: systemsQuestions },
+  cast: { id: 'cast', name: 'CRJ-700 CAS Messages', questions: castQuestions },
+  systemsWrittenExam: {
+    id: 'systemsWrittenExam',
+    name: 'Systems Written Exam',
+    questions: systemsWrittenExamQuestions,
+  },
 };
+
+function bankAuthKey(bankId) {
+  return `indoc-study-auth-${bankId}`;
+}
 
 const CHAPTER_GROUPS = [
   { key: 'all', name: 'All Chapters', categories: null },
@@ -37,14 +49,14 @@ const CHAPTER_GROUPS = [
   { key: 'egpws', name: 'EGPWS & Windshear', categories: ['egpws'] },
 ];
 
-function PasswordGate({ onAuth }) {
+function BankPasswordGate({ bankId, bankName, onAuth, onBack }) {
   const [input, setInput] = useState('');
   const [error, setError] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (input === APP_PASSWORD) {
-      localStorage.setItem(AUTH_KEY, 'true');
+    if (input === BANK_PASSWORD) {
+      localStorage.setItem(bankAuthKey(bankId), 'true');
       onAuth();
     } else {
       setError(true);
@@ -55,7 +67,7 @@ function PasswordGate({ onAuth }) {
   return (
     <div className="password-gate">
       <div className="password-card">
-        <h2>Indoc Study</h2>
+        <h2>{bankName}</h2>
         <p>Enter the password to continue.</p>
         <form onSubmit={handleSubmit}>
           <input
@@ -71,6 +83,9 @@ function PasswordGate({ onAuth }) {
           </button>
         </form>
         {error && <p className="password-error">Incorrect password.</p>}
+        <button className="btn btn-small" onClick={onBack} style={{ marginTop: '0.75rem', width: '100%' }}>
+          Back
+        </button>
       </div>
     </div>
   );
@@ -95,6 +110,16 @@ function BankSelector({ onSelect }) {
           <h3>CRJ-700/550 Systems</h3>
           <p>{systemsQuestions.length} questions</p>
           <span className="bank-desc">Aircraft systems — EICAS, powerplant, hydraulics, electrical, flight controls &amp; more</span>
+        </button>
+        <button className="bank-card" onClick={() => onSelect('cast')}>
+          <h3>CRJ-700 CAS Messages</h3>
+          <p>{castQuestions.length} questions</p>
+          <span className="bank-desc">All 354 CAS alert messages — warnings, cautions, advisories &amp; status messages</span>
+        </button>
+        <button className="bank-card" onClick={() => onSelect('systemsWrittenExam')}>
+          <h3>Systems Written Exam</h3>
+          <p>{systemsWrittenExamQuestions.length} questions</p>
+          <span className="bank-desc">Practice systems written exam — CRJ systems, limits, and procedures</span>
         </button>
       </div>
     </div>
@@ -252,12 +277,17 @@ function SystemsHub({ onSwitchBank }) {
 }
 
 export default function App() {
-  const [authed, setAuthed] = useState(() => localStorage.getItem(AUTH_KEY) === 'true');
   const [bankId, setBankId] = useState(null);
+  const [bankAuthed, setBankAuthed] = useState(() => {
+    const initial = {};
+    GATED_BANKS.forEach(id => {
+      initial[id] = localStorage.getItem(bankAuthKey(id)) === 'true';
+    });
+    return initial;
+  });
 
-  if (!authed) {
-    return <PasswordGate onAuth={() => setAuthed(true)} />;
-  }
+  const selectBank = (id) => setBankId(id);
+  const clearBank = () => setBankId(null);
 
   if (!bankId) {
     return (
@@ -266,9 +296,20 @@ export default function App() {
           <h1>Indoc Study</h1>
         </header>
         <main className="app-main">
-          <BankSelector onSelect={setBankId} />
+          <BankSelector onSelect={selectBank} />
         </main>
       </div>
+    );
+  }
+
+  if (GATED_BANKS.includes(bankId) && !bankAuthed[bankId]) {
+    return (
+      <BankPasswordGate
+        bankId={bankId}
+        bankName={BANKS[bankId].name}
+        onAuth={() => setBankAuthed(prev => ({ ...prev, [bankId]: true }))}
+        onBack={clearBank}
+      />
     );
   }
 
@@ -276,7 +317,7 @@ export default function App() {
     return (
       <SystemsHub
         key="systems"
-        onSwitchBank={() => setBankId(null)}
+        onSwitchBank={clearBank}
       />
     );
   }
@@ -285,7 +326,7 @@ export default function App() {
     <StudyApp
       key={bankId}
       bank={BANKS[bankId]}
-      onSwitchBank={() => setBankId(null)}
+      onSwitchBank={clearBank}
     />
   );
 }
