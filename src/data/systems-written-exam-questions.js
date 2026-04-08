@@ -3,7 +3,7 @@ const systemsWrittenExamQuestions = [
   {
     id: "swe1",
     question: "What is the ENG Ignition powered by?",
-    choices: ["System A - AC power", "System B - Battery Bus through static inverter", "TRU 2", "Both 1 and 2"],
+    choices: ["System A - AC power", "System B - Battery Bus through static inverter", "TRU 2", "Both A and B"],
     correctAnswer: 3,
     explanation: '',
   },
@@ -60,7 +60,7 @@ const systemsWrittenExamQuestions = [
     id: "swe9",
     question: "The Main battery is rated at ________ amp/hour and the APU battery is rated at ________ amp/hour",
     choices: ["Main - 48 amp/hour, APU - 24 amp/hour", "Main - 90 amp/hour, APU - 60 amp/hour", "Main - 17 amp/hour, APU - 43 amp/hour", "Main - 27 amp/hour, APU - 32 amp/hour"],
-    correctAnswer: 0,
+    correctAnswer: 2,
     explanation: '',
   },
   {
@@ -467,7 +467,8 @@ const systemsWrittenExamQuestions = [
     question: "_______ is the maximum altitude for starting the APU.",
     choices: ["15,000 feet pressure altitude", "37,000 feet pressure altitude", "41,000 feet pressure altitude", "25,000 feet pressure altitude"],
     correctAnswer: 2,
-    explanation: '',
+    explanation:
+      'Note: The practice Google Form scores 41,000 ft (C) as correct. The FCOM lists 37,000 ft (B) as the maximum altitude for APU start—use the FCOM for operations.',
   },
   {
     id: "swe68",
